@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as fs from 'fs';
 import * as toml from '@iarna/toml';
 
+import { IOptions, IRoleConfig } from './interface';
 import { defaultEngineConfig } from './engine';
 import {mergeDefault} from './utils';
 

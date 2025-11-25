@@ -3,6 +3,7 @@ import * as path from 'path';
 import { glob } from 'fast-glob';
 import { workspace, window } from 'coc.nvim';
 import { transferableAbortController } from 'util';
+import { IMessage } from './interface';
 
 const { nvim } = workspace;
 

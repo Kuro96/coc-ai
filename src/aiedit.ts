@@ -1,5 +1,6 @@
 import { workspace, Disposable } from 'coc.nvim';
 
+import { IAPIOptions, IEngineConfig, IMessage } from './interface';
 import { Engine } from './engine';
 import { Task } from './task';
 import { parseTaskRole } from './roles';

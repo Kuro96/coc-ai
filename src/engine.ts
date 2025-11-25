@@ -5,6 +5,8 @@ import { TextDecoder } from 'util';
 import axios from 'axios';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
+
+import { IAPIOptions, IChunk, IEngineConfig, IOptions, IToken } from './interface';
 import { AbortController, mergeDefault } from './utils';
 
 const config = workspace.getConfiguration('coc-ai');

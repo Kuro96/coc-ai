@@ -1,6 +1,7 @@
 import { events, window, workspace, Disposable } from 'coc.nvim';
 import * as toml from '@iarna/toml';
 
+import { IAPIOptions, IChatPreset, IEngineConfig, IMessage, IOptions } from './interface';
 import { Engine } from './engine';
 import { Task } from './task';
 import { parseTaskRole } from './roles';

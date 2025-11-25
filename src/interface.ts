@@ -1,4 +1,4 @@
-interface IRoleConfig {
+export interface IRoleConfig {
   prompt?: string,
   options?: IOptions,              // global/merged
   'options-chat'?: IOptions,       // chat
@@ -6,17 +6,17 @@ interface IRoleConfig {
   'options-edit'?: IOptions,       // edit
 }
 
-interface IMessage {
+export interface IMessage {
   role: 'system' | 'user' | 'assistant' | 'include',
   content: string,
 }
 
-interface IToken {
+export interface IToken {
   apiKey: string,
   orgId: string | null,
 }
 
-interface IAPIOptions {
+export interface IAPIOptions {
   model: string,
   messages: IMessage[],
   max_tokens?: number,
@@ -24,7 +24,7 @@ interface IAPIOptions {
   stream?: boolean,
 }
 
-interface IEngineConfig {
+export interface IEngineConfig {
   model: string,
   endpointUrl: string,
   proxy: string,
@@ -45,7 +45,7 @@ interface IEngineConfig {
   scratchBufferKeepOpen?: boolean,
 }
 
-interface IOptions {
+export interface IOptions {
   model?: string,
   endpointUrl?: string,
   requiresAuth?: boolean,
@@ -56,13 +56,13 @@ interface IOptions {
   initialPrompt?: string,
 }
 
-interface IChatPreset {
+export interface IChatPreset {
   preset_below: string,
   preset_tab: string,
   preset_right: string,
 }
 
-interface IChunk {
+export interface IChunk {
   type: 'content' | 'reasoning_content',
   content: string,
 }
