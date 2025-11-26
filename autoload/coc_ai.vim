@@ -54,9 +54,16 @@ function! coc_ai#AIEditRun(uses_range, ...) range abort
   let l:is_selection = a:uses_range && a:firstline == line("'<") && a:lastline == line("'>")
   let l:selection = s:GetSelectionOrRange(l:is_selection, a:uses_range, a:firstline, a:lastline)
 
-  call s:SelectSelectionOrRange(l:is_selection, a:firstline, a:lastline)
-  execute "normal! c"
-  call CocActionAsync('runCommand', 'coc-ai.edit', l:selection, l:instruction)
+  let l:range = {'kind': l:is_selection ? 'visual' : 'line'}
+  if l:is_selection
+    let l:range.start = getpos("'<")[1:2]
+    let l:range.end = getpos("'>")[1:2]
+  else
+    let l:range.start = [a:firstline, 0]
+    let l:range.end = [a:lastline, 0]
+  endif
+
+  call CocActionAsync('runCommand', 'coc-ai.edit', l:selection, l:instruction, l:range)
 endfunction
 
 " Start and answer the chat

@@ -100,3 +100,19 @@ export async function moveToLineEnd(bufnr: number, line?: number) {
   const cmd = line ? `normal! ${line}G$` : 'normal!$';
   await nvim.call('win_execute', [winid, cmd]);
 }
+
+export async function setBufferLines(bufnr: number, lines: string[]) {
+  if (workspace.isNvim) {
+    await nvim.call('nvim_buf_set_lines', [bufnr, 0, -1, false, lines]);
+  } else {
+    await nvim.call('deletebufline', [bufnr, 1, '$']);
+    await nvim.call('setbufline', [bufnr, 1, lines]);
+  }
+}
+
+export async function getBufferLines(bufnr: number): Promise<string[]> {
+  if (workspace.isNvim) {
+    return await nvim.call('nvim_buf_get_lines', [bufnr, 0, -1, false]) as string[];
+  }
+  return await nvim.call('getbufline', [bufnr, 1, '$']) as string[];
+}

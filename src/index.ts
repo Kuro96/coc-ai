@@ -30,8 +30,14 @@ export async function activate(context: ExtensionContext) {
       const aichat =await aichats.newChat();
       await aichat.run(selection, rawPrompt);
     }),
-    commands.registerCommand('coc-ai.edit', async (selection: string, rawPrompt: string) => {
-      await aiedit.run(selection, rawPrompt);
+    commands.registerCommand('coc-ai.edit', async (selection: string, rawPrompt: string, range?: any) => {
+      await aiedit.run(selection, rawPrompt, range);
+    }),
+    commands.registerCommand('coc-ai.editApply', async () => {
+      await aiedit.apply();
+    }),
+    commands.registerCommand('coc-ai.editClose', async () => {
+      await aiedit.close();
     }),
     commands.registerCommand('coc-ai.complete', async (selection: string, rawPrompt: string) => {
       const linenr = await nvim.call('line', '.');

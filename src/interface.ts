@@ -62,6 +62,12 @@ export interface IChatPreset {
   preset_right: string,
 }
 
+export interface IEditRange {
+  kind: 'visual' | 'line';
+  start: [number, number];
+  end: [number, number];
+}
+
 export interface IChunk {
   type: 'content' | 'reasoning_content',
   content: string,
