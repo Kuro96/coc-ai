@@ -10,6 +10,8 @@ I would like to express my gratitude to the original author for their work.
 
 ## Install
 
+This project uses `yarn` for package management during development.
+
 1. Ensure your vim is newer than 9 and node is newer than 18: `node --version`,
 hint for miserable CentOS users: [Node.js unofficial-builds project](https://github.com/nodejs/unofficial-builds?tab=readme-ov-file#local-installation)
 2. Install `coc.nvim`. Checkout
@@ -62,6 +64,9 @@ with `coc-ai.chat.populatesOptions` set to `true`.
 `coc-settings.json`, see [docs](https://github.com/neoclide/coc.nvim/wiki/Using-the-configuration-file)
 of `coc.nvim` for more info. You can edit it by command `:CocConfig`.
 
+- `coc-ai.tab.enabled`: boolean (default: `true`). Enable/disable AI tab completion.
+- `coc-ai.chat.autoTitle`: boolean (default: `false`). Automatically title the chat buffer after the first exchange.
+
 Also you can refer to my example below:
 
 ```json
@@ -76,6 +81,8 @@ Also you can refer to my example below:
   "coc-ai.chat.populatesOptions": true,
   "coc-ai.chat.preserveFocus": true,
   "coc-ai.chat.openChatCommand": "preset_right",
+  "coc-ai.chat.autoTitle": true,
+  "coc-ai.tab.enabled": true
 }
 ```
 
@@ -109,15 +116,16 @@ NOTE:
 
 ## TODOs
 
-- [x] proxy for api request
-- [x] option for chat whether keep track with cursor
-- [x] implement ai complete
-- [x] implement ai edit
-- [x] support `CocInstall`
+- [x] Proxy for api request
+- [x] Option for chat whether keep track with cursor
+- [x] Implement ai complete
+- [x] Implement ai edit
+- [x] Support `CocInstall`
 - [x] README
-- [x] auto attach with `.aichat` files
-- [ ] maybe auto-complete?
-- [ ] AI abstraction for chats?
+- [x] Auto attach with `.aichat` files
+- [x] Implemented AI tab completion
+- [x] Added optional auto-titling for AIChat.
+
 
 ## License
 
