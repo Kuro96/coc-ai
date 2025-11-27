@@ -180,7 +180,10 @@ ${snippet}
 
     let completionText = '';
     try {
-      completionText = await this.engine.execute(this.engine.config, requestData);
+      completionText = await this.engine.execute(
+        this.engine.config,
+        requestData,
+      );
     } catch (error) {
       return;
     }

@@ -1,21 +1,33 @@
 import { events, window, workspace, Disposable } from 'coc.nvim';
 import * as toml from '@iarna/toml';
 
-import { IAPIOptions, IChatPreset, IEngineConfig, IMessage, IOptions } from './interface';
+import {
+  IAPIOptions,
+  IChatPreset,
+  IEngineConfig,
+  IMessage,
+  IOptions,
+} from './interface';
 import { Engine } from './engine';
 import { Task } from './task';
 import { parseTaskRole } from './roles';
 import {
-  breakUndoSequence, moveToBottom, moveToLineEnd, resolveIncludeMessage,
-  CHAT_TABLE, REASON_START, REASON_FINISH,
+  breakUndoSequence,
+  moveToBottom,
+  moveToLineEnd,
+  resolveIncludeMessage,
+  CHAT_TABLE,
+  REASON_START,
+  REASON_FINISH,
 } from './utils';
 
 const { nvim } = workspace;
 
 const chatPreset: IChatPreset = {
-  "preset_below": "below new {}",
-  "preset_tab": "tabnew {}",
-  "preset_right": "rightbelow 55vnew {} | setlocal noequalalways | setlocal winfixwidth",
+  preset_below: 'below new {}',
+  preset_tab: 'tabnew {}',
+  preset_right:
+    'rightbelow 55vnew {} | setlocal noequalalways | setlocal winfixwidth',
 };
 
 export class AIChats implements Disposable {
@@ -31,9 +43,9 @@ export class AIChats implements Disposable {
     this.#bufnrs = new Array();
     this.#chats = new Map();
 
-    this.#disposable = events.on('BufUnload', bufnr => {
+    this.#disposable = events.on('BufUnload', (bufnr) => {
       this.#removeChat(bufnr);
-    })
+    });
   }
 
   /**
@@ -60,9 +72,17 @@ export class AIChats implements Disposable {
     }
   }
 
-  includes(bufnr: number) { return this.#bufnrs.includes(bufnr) }
+  includes(bufnr: number) {
+    return this.#bufnrs.includes(bufnr);
+  }
 
-  async getChat({ bufnr, init = false }: { bufnr?: number, init?: boolean }): Promise<AIChat> {
+  async getChat({
+    bufnr,
+    init = false,
+  }: {
+    bufnr?: number;
+    init?: boolean;
+  }): Promise<AIChat> {
     let chat: AIChat;
     if (bufnr !== undefined) {
       if (this.#chats.has(bufnr)) {
@@ -84,17 +104,19 @@ export class AIChats implements Disposable {
     if (chat.bufnr === -1) {
       window.showErrorMessage(
         'Failed to associate AIChat with existing window, ' +
-        'is there any AIChat created outside coc-ai?');
+          'is there any AIChat created outside coc-ai?',
+      );
     }
 
-    return this.#chats.get(chat.bufnr)!
+    return this.#chats.get(chat.bufnr)!;
   }
 
   async newChat(name?: string) {
     if (name === undefined) {
-      name = this.#nextIndex === 1
-        ? '>>> AI chat'
-        : `>>> AI chat ${this.#nextIndex}`;
+      name =
+        this.#nextIndex === 1
+          ? '>>> AI chat'
+          : `>>> AI chat ${this.#nextIndex}`;
     }
     const chat = await AIChat.create(name);
     this.#nextIndex += 1;
@@ -103,9 +125,9 @@ export class AIChats implements Disposable {
   }
 
   dispose(): void {
-    this.#disposable.dispose()
+    this.#disposable.dispose();
     for (let chat of this.#chats.values()) {
-      chat.dispose()
+      chat.dispose();
     }
     this.#chats.clear();
     this.#bufnrs.length = 0;
@@ -113,7 +135,7 @@ export class AIChats implements Disposable {
 }
 
 export async function hideChat(aichats: AIChats) {
-  const bufnr = await nvim.call('bufnr', '%') as number;
+  const bufnr = (await nvim.call('bufnr', '%')) as number;
   try {
     (await aichats.getChat({ bufnr })).hide();
   } catch {}
@@ -154,7 +176,7 @@ export class AIChat implements Task, Disposable {
     const messages = await this.#parseChatMessages(indexMsgStart);
     if (this.#populatesOptions && indexHeaderEnd === 0) this.populateOptions();
 
-    return { messages, chatOptions }
+    return { messages, chatOptions };
   }
 
   async populateOptions() {
@@ -176,7 +198,7 @@ export class AIChat implements Task, Disposable {
   async run(selection: string, rawPrompt: string) {
     const sep = selection === '' || rawPrompt === '' ? '' : ':\n';
     let { prompt, options } = parseTaskRole(rawPrompt, 'chat');
-    prompt = prompt + sep + selection;  // role.prompt + user prompt + selection
+    prompt = prompt + sep + selection; // role.prompt + user prompt + selection
 
     const { messages, chatOptions } = await this.parseContent();
     this.syncLines();
@@ -192,28 +214,30 @@ export class AIChat implements Task, Disposable {
       await this.appendBlock('>>> user');
     }
 
-    if (prompt) messages.push({ role: "user", content: prompt });
+    if (prompt) messages.push({ role: 'user', content: prompt });
     if (messages[messages.length - 1].role !== 'user') {
-      window.showInformationMessage('No new incoming user message found, skipped.')
+      window.showInformationMessage(
+        'No new incoming user message found, skipped.',
+      );
       this.breakUndoSequence();
-      return
-    };
+      return;
+    }
     if (prompt) await this.appendBlock(prompt);
 
-    let mergedConfig: IEngineConfig
+    let mergedConfig: IEngineConfig;
     if (chatOptions) mergedConfig = this.engine.mergeOptions(chatOptions);
     mergedConfig = this.engine.mergeOptions(options); // in case no options offerd
 
-    messages.unshift({role: "system", content: mergedConfig.initialPrompt});
+    messages.unshift({ role: 'system', content: mergedConfig.initialPrompt });
     const data: IAPIOptions = {
       model: mergedConfig.model,
       messages: messages,
       max_tokens: mergedConfig.maxTokens,
       temperature: mergedConfig.temperature,
       stream: true,
-    }
+    };
 
-    let resp = this.engine.generate(mergedConfig, data)
+    let resp = this.engine.generate(mergedConfig, data);
     await this.appendBlock('<<< assistant');
     let isReasoning = false;
     try {
@@ -240,11 +264,17 @@ export class AIChat implements Task, Disposable {
     }
   }
 
-  get engine(): Engine { return this.#engine }
+  get engine(): Engine {
+    return this.#engine;
+  }
 
-  get bufnr() { return this.#bufnr }
+  get bufnr() {
+    return this.#bufnr;
+  }
 
-  set bufnr(value: number) { this.#bufnr = value }
+  set bufnr(value: number) {
+    this.#bufnr = value;
+  }
 
   append(value: string) {
     let idx = this.lines.length - 1;
@@ -282,12 +312,16 @@ export class AIChat implements Task, Disposable {
         break;
       }
     }
-    return idx
+    return idx;
   }
 
   async #parseChatHeaderOptions(end: number | null) {
     try {
-      let lines: string[] = await nvim.call('getbufline', [this.name, 1, end ?? '$']);
+      let lines: string[] = await nvim.call('getbufline', [
+        this.name,
+        1,
+        end ?? '$',
+      ]);
       const options: IOptions = toml.parse(lines.join('\n'));
       return options;
     } catch (error) {
@@ -296,7 +330,11 @@ export class AIChat implements Task, Disposable {
   }
 
   async #parseChatMessages(start: number | null) {
-    const lines: string[] = await nvim.call('getbufline', [this.name , start ?? 1, '$']);
+    const lines: string[] = await nvim.call('getbufline', [
+      this.name,
+      start ?? 1,
+      '$',
+    ]);
     let messages: IMessage[] = [];
     let isReasoning = false;
     for (const line of lines) {
@@ -363,7 +401,7 @@ export class AIChat implements Task, Disposable {
         return 'attached';
       }
     }
-    return false
+    return false;
   }
 
   /**
@@ -372,13 +410,15 @@ export class AIChat implements Task, Disposable {
    * @param cmd - The command to use for displaying the chat window. Defaults to 'preset_below'.
    */
   async show(preserveFocus?: boolean) {
-    const isChat = (await nvim.call('bufname', '%') === this.name) ? true : false;
+    const isChat =
+      (await nvim.call('bufname', '%')) === this.name ? true : false;
     preserveFocus = preserveFocus ?? this.config.preserveFocus!;
     const status = await this.#tryResumeWindow();
     if (!status) {
-      const command = this.#openChatCMD in chatPreset
-        ? chatPreset[this.#openChatCMD].replace(/{}/, this.name)
-        : `${this.#openChatCMD} ${this.name}`;
+      const command =
+        this.#openChatCMD in chatPreset
+          ? chatPreset[this.#openChatCMD].replace(/{}/, this.name)
+          : `${this.#openChatCMD} ${this.name}`;
       window.showInformationMessage(command);
       await nvim.command(command);
 
@@ -393,9 +433,17 @@ export class AIChat implements Task, Disposable {
         }
       }
       if (this.#codeSyntaxEnabled) {
-        await nvim.call('setbufvar', [this.bufnr, 'coc_ai_chat_syntax_enabled', 1]);
+        await nvim.call('setbufvar', [
+          this.bufnr,
+          'coc_ai_chat_syntax_enabled',
+          1,
+        ]);
       } else {
-        await nvim.call('setbufvar', [this.bufnr, 'coc_ai_chat_syntax_enabled', 0]);
+        await nvim.call('setbufvar', [
+          this.bufnr,
+          'coc_ai_chat_syntax_enabled',
+          0,
+        ]);
       }
       this.created = true;
     } else if (status === 'detached') {
@@ -408,12 +456,17 @@ export class AIChat implements Task, Disposable {
   }
 
   async syncLines() {
-    const contents: string[] = await nvim.call('getbufline', [this.bufnr, 1, '$']);
+    const contents: string[] = await nvim.call('getbufline', [
+      this.bufnr,
+      1,
+      '$',
+    ]);
     this.lines = contents.length ? contents : [''];
   }
 
   async abort() {
-    if (!this.#engine.controller.signal.aborted) this.#engine.controller.abort();
+    if (!this.#engine.controller.signal.aborted)
+      this.#engine.controller.abort();
   }
 
   /**
@@ -432,5 +485,4 @@ export class AIChat implements Task, Disposable {
   }
 
   dispose() {}
-
 }

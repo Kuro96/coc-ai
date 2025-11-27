@@ -4,14 +4,17 @@ import * as toml from '@iarna/toml';
 
 import { IOptions, IRoleConfig } from './interface';
 import { defaultEngineConfig } from './engine';
-import {mergeDefault} from './utils';
+import { mergeDefault } from './utils';
 
 export function getRoles() {
   let rolesConfigPath = defaultEngineConfig.rolesConfigPath;
-  rolesConfigPath = rolesConfigPath.replace(/^~/, os.homedir())
+  rolesConfigPath = rolesConfigPath.replace(/^~/, os.homedir());
   try {
     const content = fs.readFileSync(rolesConfigPath, 'utf-8');
-    const roles: Record<string, IRoleConfig> = toml.parse(content) as Record<string, any>;
+    const roles: Record<string, IRoleConfig> = toml.parse(content) as Record<
+      string,
+      any
+    >;
     return roles;
   } catch (e) {
     console.error(`Error reading ini file: ${e}`);
@@ -19,7 +22,10 @@ export function getRoles() {
   }
 }
 
-export function parseTaskRole(rawPrompt: string, task?: 'chat' | 'complete' | 'edit' ): IRoleConfig {
+export function parseTaskRole(
+  rawPrompt: string,
+  task?: 'chat' | 'complete' | 'edit',
+): IRoleConfig {
   rawPrompt = rawPrompt.trim();
   if (!rawPrompt.startsWith('/')) return { prompt: rawPrompt };
 

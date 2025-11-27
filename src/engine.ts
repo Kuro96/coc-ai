@@ -6,7 +6,13 @@ import axios from 'axios';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
-import { IAPIOptions, IChunk, IEngineConfig, IOptions, IToken } from './interface';
+import {
+  IAPIOptions,
+  IChunk,
+  IEngineConfig,
+  IOptions,
+  IToken,
+} from './interface';
 import { AbortController, mergeDefault } from './utils';
 
 const config = workspace.getConfiguration('coc-ai');
@@ -17,7 +23,7 @@ export class Engine {
   controller: AbortController;
 
   constructor(public configName: 'chat' | 'edit' | 'complete' | 'tab') {
-    this.config = this.#initEngineConfig()
+    this.config = this.#initEngineConfig();
     this.controller = new AbortController();
   }
 
@@ -48,13 +54,13 @@ export class Engine {
       apiKeyParamValue = fs.readFileSync(this.config.tokenPath, 'utf-8');
     } catch (error) {}
     if (!apiKeyParamValue) {
-      throw new Error("Missing API key");
+      throw new Error('Missing API key');
     }
 
     const elements = apiKeyParamValue.trim().split(',');
     const apiKey = elements[0].trim();
     const orgId = elements.length > 1 ? elements[1].trim() : null;
-    return { apiKey, orgId }
+    return { apiKey, orgId };
   }
 
   async #makeRequest(requestConfig: IEngineConfig, data: IAPIOptions) {
@@ -62,18 +68,22 @@ export class Engine {
     const headers = {
       'Content-Type': 'application/json',
       ...(this.config.requiresAuth && {
-        'Authorization': `Bearer ${this.token.apiKey}`,
-        ...(this.token.orgId && { 'OpenAI-Organization': this.token.orgId })
-      })
+        Authorization: `Bearer ${this.token.apiKey}`,
+        ...(this.token.orgId && { 'OpenAI-Organization': this.token.orgId }),
+      }),
     };
     const body = JSON.stringify(data);
-    const httpAgent = this.config.proxy ? new HttpProxyAgent(this.config.proxy) : null;
-    const httpsAgent = this.config.proxy ? new HttpsProxyAgent(this.config.proxy) : null;
+    const httpAgent = this.config.proxy
+      ? new HttpProxyAgent(this.config.proxy)
+      : null;
+    const httpsAgent = this.config.proxy
+      ? new HttpsProxyAgent(this.config.proxy)
+      : null;
 
     if (!this.controller.signal.aborted) this.controller.abort();
     this.controller = new AbortController();
     let timeout = setTimeout(() => {
-      this.controller.abort()
+      this.controller.abort();
     }, this.config.requestTimeout * 1000);
 
     const resp = await axios({
@@ -94,7 +104,10 @@ export class Engine {
     return resp;
   }
 
-  async execute(requestConfig: IEngineConfig, data: IAPIOptions): Promise<string> {
+  async execute(
+    requestConfig: IEngineConfig,
+    data: IAPIOptions,
+  ): Promise<string> {
     const resp = await this.#makeRequest(requestConfig, data);
     const choice = resp.data.choices?.[0];
     if (!choice) return '';
@@ -104,7 +117,7 @@ export class Engine {
 
   #parseLine(line: string) {
     const parsed = JSON.parse(line);
-    let chunk: IChunk
+    let chunk: IChunk;
     if (typeof parsed.choices?.[0]?.delta?.reasoning_content === 'string') {
       chunk = {
         type: 'reasoning_content',
@@ -115,19 +128,21 @@ export class Engine {
         type: 'content',
         content: parsed.choices[0].delta.content,
       };
-    } else { chunk = { type: 'content', content: '' } }
-    return chunk
+    } else {
+      chunk = { type: 'content', content: '' };
+    }
+    return chunk;
   }
 
-  async * generate(requestConfig: IEngineConfig, data: IAPIOptions) {
-    const resp = await this.#makeRequest(requestConfig, data)
+  async *generate(requestConfig: IEngineConfig, data: IAPIOptions) {
+    const resp = await this.#makeRequest(requestConfig, data);
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
 
     for await (const value of resp.data) {
       if (this.controller.signal.aborted) break;
-      const data = decoder.decode(value, {stream: true});
-      const lines = data.split('\n').filter(line => line.trim() !== '');
+      const data = decoder.decode(value, { stream: true });
+      const lines = data.split('\n').filter((line) => line.trim() !== '');
       for (let line of lines) {
         line = line.startsWith('data: ') ? line.slice('data: '.length) : line;
         if (line === '[DONE]') continue;
@@ -141,7 +156,7 @@ export class Engine {
           if (buffer) {
             window.showErrorMessage(`Error during decoding:${error}`);
           } else {
-            buffer += line;  // in case json row scattered across two chunks
+            buffer += line; // in case json row scattered across two chunks
           }
         }
       }

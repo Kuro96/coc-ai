@@ -9,7 +9,8 @@ const { nvim } = workspace;
 
 // Workaround: Unable to acquire native controller directly
 const controller = transferableAbortController();
-export const AbortController = controller.constructor as typeof globalThis.AbortController;
+export const AbortController =
+  controller.constructor as typeof globalThis.AbortController;
 
 export const CHAT_TABLE = 'chat-options';
 export const REASON_START = '<think>';
@@ -22,7 +23,8 @@ export async function breakUndoSequence() {
 }
 
 export function mergeDefault<T>(defaultConfig: T, updates: Partial<T>): T {
-  const isObject = (obj: any): obj is object => obj && typeof obj === 'object' && !Array.isArray(obj);
+  const isObject = (obj: any): obj is object =>
+    obj && typeof obj === 'object' && !Array.isArray(obj);
   const merge = (target: any, source: any): any => {
     if (isObject(target) && isObject(source)) {
       for (const key in source) {
@@ -47,7 +49,7 @@ export function mergeDefault<T>(defaultConfig: T, updates: Partial<T>): T {
 
 export function resolveIncludeMessage(message: IMessage) {
   message.role = 'user';
-  let paths: Array<string|null> = message.content.split('\n');
+  let paths: Array<string | null> = message.content.split('\n');
   message.content = '';
   const pwd = workspace.root;
   for (const i in paths) {
@@ -61,7 +63,7 @@ export function resolveIncludeMessage(message: IMessage) {
       paths.push(...glob.sync(p));
     }
   }
-  for (const p of paths.filter(p => p !== null)) {
+  for (const p of paths.filter((p) => p !== null)) {
     if (fs.lstatSync(p).isDirectory()) continue;
     try {
       message.content += `\n\n==> ${p} <==\n` + fs.readFileSync(p, 'utf-8');
@@ -69,7 +71,7 @@ export function resolveIncludeMessage(message: IMessage) {
       message.content += `\n\n==> ${p} <==\nBinary file, cannot display`;
     }
   }
-  return message
+  return message;
 }
 
 export function handleCompletionError(error: Error) {
@@ -85,9 +87,9 @@ export function handleCompletionError(error: Error) {
 }
 
 export function sleep(interval: number): Promise<void> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, interval);
-  })
+  });
 }
 
 export async function moveToBottom(bufnr: number) {
@@ -112,7 +114,12 @@ export async function setBufferLines(bufnr: number, lines: string[]) {
 
 export async function getBufferLines(bufnr: number): Promise<string[]> {
   if (workspace.isNvim) {
-    return await nvim.call('nvim_buf_get_lines', [bufnr, 0, -1, false]) as string[];
+    return (await nvim.call('nvim_buf_get_lines', [
+      bufnr,
+      0,
+      -1,
+      false,
+    ])) as string[];
   }
-  return await nvim.call('getbufline', [bufnr, 1, '$']) as string[];
+  return (await nvim.call('getbufline', [bufnr, 1, '$'])) as string[];
 }
