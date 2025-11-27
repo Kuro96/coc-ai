@@ -4,7 +4,7 @@ In `coc-ai`, "Agents" are implemented as **Roles**. A role is a named configurat
 
 ## Configuration
 
-Roles are defined in a TOML file. You can specify the path to this file in your `coc-settings.json` using the `coc-ai.global.rolesConfigPath` setting.
+Roles are defined in a TOML file. You can specify the path to this file in your `coc-settings.json` using the `coc-ai.global.rolesConfigPath` setting. Additionally, you can enable/disable the AI tab completion feature using the `coc-ai.tab.enabled` setting in `coc-settings.json`.
 
 A default example is provided in `roles-example.toml`.
 
@@ -79,3 +79,7 @@ temperature = 0.2
 ```vim
 :AIC /python Write a fastAPI endpoint
 ```
+
+## Project Information
+
+This project uses `yarn` for package management.
