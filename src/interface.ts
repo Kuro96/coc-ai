@@ -44,6 +44,7 @@ export interface IEngineConfig {
   populatesOptions?: boolean;
   openChatCommand?: string;
   scratchBufferKeepOpen?: boolean;
+  autoTitle?: boolean;
 
   // tab
   enabled?: boolean;

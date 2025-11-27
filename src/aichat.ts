@@ -152,6 +152,7 @@ export class AIChat implements Task, Disposable {
   #openChatCMD: string;
   #populatesOptions: boolean;
   #codeSyntaxEnabled: boolean;
+  #autoTitle: boolean;
 
   constructor(public name = '>>> AI chat') {
     this.#engine = new Engine('chat');
@@ -161,6 +162,7 @@ export class AIChat implements Task, Disposable {
     this.#openChatCMD = this.config.openChatCommand!;
     this.#populatesOptions = this.config.populatesOptions!;
     this.#codeSyntaxEnabled = this.config.codeSyntaxEnabled!;
+    this.#autoTitle = this.config.autoTitle ?? false;
   }
 
   static async create(name = '>>> AI chat') {
@@ -193,6 +195,35 @@ export class AIChat implements Task, Disposable {
     let headers = toml.stringify(options as any).split('\n');
     headers.unshift(`[${CHAT_TABLE}]`);
     await nvim.call('appendbufline', [this.name, 0, headers]);
+  }
+
+  async #generateTitle(messages: IMessage[]) {
+    const prompt =
+      'Summarize the following conversation into a short title (max 5 words). Do not use quotes. Do not use any intro or outro.';
+    const titleMessages: IMessage[] = [
+      ...messages,
+      { role: 'user', content: prompt },
+    ];
+
+    const requestData: IAPIOptions = {
+      model: this.engine.config.model,
+      messages: titleMessages,
+      max_tokens: 50,
+      temperature: 0.7,
+      stream: false,
+    };
+
+    try {
+      let title = await this.engine.execute(this.engine.config, requestData);
+      title = title.trim().replace(/["']/g, '').replace(/\n/g, ' ');
+      if (title) {
+        const newName = `>>> AI chat: ${title}`;
+        await nvim.command(`keepalt file ${newName.replace(/\s/g, '\\ ')}`);
+        this.name = newName;
+      }
+    } catch (e) {
+      // Ignore title generation errors
+    }
   }
 
   async run(selection: string, rawPrompt: string) {
@@ -240,6 +271,7 @@ export class AIChat implements Task, Disposable {
     let resp = this.engine.generate(mergedConfig, data);
     await this.appendBlock('<<< assistant');
     let isReasoning = false;
+    let fullResponse = '';
     try {
       for await (const chunk of resp) {
         if (chunk.type === 'reasoning_content') {
@@ -254,13 +286,33 @@ export class AIChat implements Task, Disposable {
             isReasoning = false;
           }
           this.append(chunk.content);
+          fullResponse += chunk.content;
         }
+      }
+      if (isReasoning) {
+        await this.appendBlock(REASON_FINISH);
       }
     } catch (e) {
       if (!(e instanceof Error && e.name === 'AbortError')) throw e;
     } finally {
       await this.appendBlock('>>> user');
       await this.breakUndoSequence();
+
+      // Auto-title if enabled and likely the first turn (default name)
+      if (
+        this.#autoTitle &&
+        this.name.match(/^>>> AI chat( \d+)?$/) &&
+        messages.length <= 3 // system + user + assistant (we just added assistant)
+      ) {
+        // We need the assistant's response in the messages for the summary
+        // The 'messages' array currently has system + user. We need to append the assistant response.
+        const historyForTitle: IMessage[] = [
+          ...messages.filter((m) => m.role !== 'system'), // Exclude system prompt for shorter context? Or keep it. Let's exclude to save tokens/focus on topic.
+          { role: 'assistant', content: fullResponse },
+        ];
+        // Run asynchronously
+        this.#generateTitle(historyForTitle);
+      }
     }
   }
 

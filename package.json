@@ -116,6 +116,11 @@
           "default": "You are a helpful code assistant\nAssume that all unknown symbols are properly initialized elsewhere\nAdd a syntax type after ``` to enable proper syntax highlighting in fenced code blocks",
           "description": "Initial chat prompt as system role"
         },
+        "coc-ai.chat.autoTitle": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically title the chat buffer"
+        },
         "coc-ai.chat.autoScroll": {
           "type": "boolean",
           "default": true,
