@@ -219,6 +219,58 @@
           "type": "string",
           "default": "You will act as a code generator.\nDo not write any introduction, conclusion, or explanation.\nDo not use fenced code blocks.",
           "description": "Initial complete prompt as system role"
+        },
+        "coc-ai.tab.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable AI tab completion"
+        },
+        "coc-ai.tab.model": {
+          "type": "string",
+          "description": "Model name for AI tab completion"
+        },
+        "coc-ai.tab.endpointUrl": {
+          "type": "string",
+          "description": "Model API endpoint URL for AI tab completion"
+        },
+        "coc-ai.tab.proxy": {
+          "type": "string",
+          "description": "Proxy for AI tab completion endpointUrl"
+        },
+        "coc-ai.tab.maxTokens": {
+          "type": "number",
+          "default": 200,
+          "description": "Max token for AI tab completion, 0 for unlimited"
+        },
+        "coc-ai.tab.maxContextSize": {
+          "type": "number",
+          "default": 4096,
+          "description": "Max context size (characters) for AI tab completion input"
+        },
+        "coc-ai.tab.includeOpenBuffers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to include content from other open buffers of the same file type as context"
+        },
+        "coc-ai.tab.temperature": {
+          "type": "number",
+          "default": 0.2,
+          "description": "Model temperature for AI tab completion"
+        },
+        "coc-ai.tab.requestTimeout": {
+          "type": "number",
+          "default": 5,
+          "description": "Timeout for AI tab completion"
+        },
+        "coc-ai.tab.requiresAuth": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether requires authentitation for AI tab completion"
+        },
+        "coc-ai.tab.initialPrompt": {
+          "type": "string",
+          "default": "You are a code completion engine. \nComplete the following code context. \nDo not provide any explanation. \nDo not use fenced code blocks. \nOnly return the completion part.",
+          "description": "Initial prompt for tab completion as system role"
         }
       }
     },

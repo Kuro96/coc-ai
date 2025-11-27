@@ -16,7 +16,7 @@ export class Engine {
   config: IEngineConfig;
   controller: AbortController;
 
-  constructor(public configName: 'chat' | 'edit' | 'complete') {
+  constructor(public configName: 'chat' | 'edit' | 'complete' | 'tab') {
     this.config = this.#initEngineConfig()
     this.controller = new AbortController();
   }
@@ -85,13 +85,21 @@ export class Engine {
       httpsAgent,
       signal: this.controller.signal,
       timeout: this.config.requestTimeout * 1000,
-      responseType: 'stream',
+      responseType: data.stream ? 'stream' : 'json',
     });
     clearTimeout(timeout);
     if (resp.status !== 200) {
       window.showErrorMessage(`HTTPError ${resp.status}: ${resp.statusText}`);
     }
-    return resp
+    return resp;
+  }
+
+  async execute(requestConfig: IEngineConfig, data: IAPIOptions): Promise<string> {
+    const resp = await this.#makeRequest(requestConfig, data);
+    const choice = resp.data.choices?.[0];
+    if (!choice) return '';
+    if (choice.message?.content) return choice.message.content;
+    return '';
   }
 
   #parseLine(line: string) {
