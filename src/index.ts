@@ -76,6 +76,13 @@ export async function activate(context: ExtensionContext) {
       const chat = await aichats.newChat(name);
       await chat.initializeIfEmpty();
     }),
+    commands.registerCommand('coc-ai.chatExport', async () => {
+      const bufnr = (await nvim.call('bufnr', '%')) as number;
+      const chat = await aichats.getChat({ bufnr });
+      if (chat) {
+        await chat.export();
+      }
+    }),
     commands.registerCommand('coc-ai.show', async () => {
       await aichats.getChat({ init: true });
     }),

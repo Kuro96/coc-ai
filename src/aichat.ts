@@ -1,5 +1,7 @@
 import { events, window, workspace, Disposable } from 'coc.nvim';
 import * as toml from '@iarna/toml';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import {
   IAPIOptions,
@@ -231,6 +233,39 @@ export class AIChat implements Task, Disposable {
       }
     } catch (e) {
       // Ignore title generation errors
+    }
+  }
+
+  async export() {
+    const { messages: originalMessages } = await this.parseContent();
+    const messages = [...originalMessages]; // Create a mutable copy
+
+    // Check if the last message is an empty user message and remove it
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'user' && lastMessage.content.trim() === '') {
+        messages.pop();
+      }
+    }
+
+    let mdContent = '';
+    for (const msg of messages) {
+      if (msg.role === 'system' || msg.role === 'include') continue;
+
+      const roleName = msg.role === 'user' ? 'User' : 'Assistant';
+      mdContent += `## ${roleName}\n\n${msg.content}\n\n`;
+    }
+
+    const defaultName =
+      this.name.replace(/^>>> AI chat(: )?/, '').replace(/ /g, '_') + '.md';
+    const filePath = await window.requestInput('Export to:', defaultName);
+
+    if (filePath) {
+      const fullPath = path.isAbsolute(filePath)
+        ? filePath
+        : path.join(workspace.cwd, filePath);
+      fs.writeFileSync(fullPath, mdContent);
+      window.showInformationMessage(`Exported to ${fullPath}`);
     }
   }
 
@@ -504,6 +539,12 @@ export class AIChat implements Task, Disposable {
           'coc_ai_chat_syntax_enabled',
           0,
         ]);
+      }
+
+      if (await nvim.call('exists', ['+winbar'])) {
+        await nvim.command(
+          `setlocal winbar=%@CocAIChatExportClick@\\ [Export]\\ %X`,
+        );
       }
       this.created = true;
     } else if (status === 'detached') {
