@@ -73,7 +73,8 @@ export async function activate(context: ExtensionContext) {
     ),
     commands.registerCommand('coc-ai.attachChat', async () => {
       const name = await nvim.call('bufname', '%');
-      await aichats.newChat(name);
+      const chat = await aichats.newChat(name);
+      await chat.initializeIfEmpty();
     }),
     commands.registerCommand('coc-ai.show', async () => {
       await aichats.getChat({ init: true });

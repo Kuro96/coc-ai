@@ -181,6 +181,14 @@ export class AIChat implements Task, Disposable {
     return { messages, chatOptions };
   }
 
+  async initializeIfEmpty() {
+    if (!this.#populatesOptions) return;
+    const lines = await nvim.call('getbufline', [this.name, 1, '$']);
+    if (lines.length <= 1 && lines[0].trim() === '') {
+      await this.populateOptions();
+    }
+  }
+
   async populateOptions() {
     let options: IOptions = {
       model: this.engine.config.model,
