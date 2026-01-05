@@ -6,7 +6,7 @@ command! -range -nargs=? -complete=customlist,coc_ai#RoleCompletion AIEdit    <l
 command! -range -nargs=? -complete=customlist,coc_ai#RoleCompletion AIChat    <line1>,<line2>call coc_ai#AIChatRun(<range>, <q-args>)
 command! -range -nargs=? -complete=customlist,coc_ai#RoleCompletion AINewChat <line1>,<line2>call coc_ai#AINewChatRun(<range>, <q-args>)
 
-command! AIChatExport call CocActionAsync('runCommand', 'coc-ai.chatExport')
+command! AIToMarkdown call CocActionAsync('runCommand', 'coc-ai.chatExport')
 function! CocAIChatExportClick(minwid, clicks, btn, modifiers)
   call CocActionAsync('runCommand', 'coc-ai.chatExport')
 endfunction
