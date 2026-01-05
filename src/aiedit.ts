@@ -121,27 +121,34 @@ export class AIEdit implements Task, Disposable {
   async setupDiffView(selection: string) {
     // Create new tab with empty buffer (AI Output) -> Left Side
     await nvim.command('tabnew');
+    const newBufnr = await nvim.call('bufnr', '%');
+    if (newBufnr === this.originalBufnr) {
+      throw new Error('AI Edit: Failed to create new tab');
+    }
     await nvim.command('setlocal buftype=nofile bufhidden=wipe noswapfile');
+    await nvim.command('let b:coc_enabled = 0');
     this.aiBufnr = await nvim.call('bufnr', '%');
     try {
       await nvim.command('file AI Output');
     } catch (e) {
       /* ignore if name exists */
     }
+    await nvim.command('let b:coc_enabled = 1');
 
     // Set initial instructions
     await setBufferLines(this.aiBufnr, INSTRUCTIONS);
 
     // Create vsplit for Original Selection -> Right Side
-    await nvim.command('rightbelow vsplit');
-    await nvim.command('enew');
+    await nvim.command('rightbelow vnew');
     await nvim.command('setlocal buftype=nofile bufhidden=wipe noswapfile');
+    await nvim.command('let b:coc_enabled = 0');
     this.origTempBufnr = await nvim.call('bufnr', '%');
     try {
       await nvim.command('file Original Selection');
     } catch (e) {
       /* ignore */
     }
+    await nvim.command('let b:coc_enabled = 1');
 
     const origLines = selection.split(/\r?\n/);
     // Add instructions to original view so both sides match headers

@@ -517,6 +517,7 @@ export class AIChat implements Task, Disposable {
     preserveFocus = preserveFocus ?? this.config.preserveFocus!;
     const status = await this.#tryResumeWindow();
     if (!status) {
+      const currentBufnr = await nvim.call('bufnr', '%');
       const command =
         this.#openChatCMD in chatPreset
           ? chatPreset[this.#openChatCMD].replace(/{}/, this.name)
@@ -525,6 +526,9 @@ export class AIChat implements Task, Disposable {
       await nvim.command(command);
 
       this.bufnr = await nvim.call('bufnr', '%');
+      if (this.bufnr === currentBufnr) {
+        throw new Error('Failed to open chat window, aborting to protect current buffer.');
+      }
 
       if (!this.name.endsWith('.aichat')) {
         await nvim.command('setlocal buftype=nofile noswapfile ft=aichat');
