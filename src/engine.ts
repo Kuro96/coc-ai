@@ -86,17 +86,23 @@ export class Engine {
       this.controller.abort();
     }, this.config.requestTimeout * 1000);
 
-    const resp = await axios({
-      method: 'post',
-      url: this.config.endpointUrl,
-      data: body,
-      headers,
-      httpAgent,
-      httpsAgent,
-      signal: this.controller.signal,
-      timeout: this.config.requestTimeout * 1000,
-      responseType: data.stream ? 'stream' : 'json',
-    });
+    let resp;
+    try {
+      resp = await axios({
+        method: 'post',
+        url: this.config.endpointUrl,
+        data: body,
+        headers,
+        httpAgent,
+        httpsAgent,
+        signal: this.controller.signal,
+        timeout: this.config.requestTimeout * 1000,
+        responseType: data.stream ? 'stream' : 'json',
+      });
+    } catch (error) {
+      console.error('coc-ai request failed:', error);
+      throw error;
+    }
     clearTimeout(timeout);
     if (resp.status !== 200) {
       window.showErrorMessage(`HTTPError ${resp.status}: ${resp.statusText}`);

@@ -336,7 +336,14 @@ export class AIChat implements Task, Disposable {
         await this.appendBlock(REASON_FINISH);
       }
     } catch (e) {
-      if (!(e instanceof Error && e.name === 'AbortError')) throw e;
+      if (
+        e instanceof Error &&
+        (e.name === 'AbortError' || e.name === 'CanceledError')
+      ) {
+        window.showWarningMessage('AI Request canceled or timed out.');
+        return;
+      }
+      throw e;
     } finally {
       await this.appendBlock('>>> user');
       await this.breakUndoSequence();
