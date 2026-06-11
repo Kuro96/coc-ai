@@ -10,7 +10,7 @@ import {
   IMessage,
   IOptions,
 } from './interface';
-import { Engine } from './engine';
+import { buildAPIOptions, Engine } from './engine';
 import { Task } from './task';
 import { parseTaskRole } from './roles';
 import {
@@ -21,6 +21,7 @@ import {
   CHAT_TABLE,
   REASON_START,
   REASON_FINISH,
+  mergeDefault,
 } from './utils';
 
 const { nvim } = workspace;
@@ -200,6 +201,8 @@ export class AIChat implements Task, Disposable {
       proxy: this.engine.config.proxy,
       maxTokens: this.engine.config.maxTokens,
       temperature: this.engine.config.temperature,
+      thinking: this.engine.config.thinking,
+      reasoningEffort: this.engine.config.reasoningEffort,
       initialPrompt: this.engine.config.initialPrompt,
     };
     let headers = toml.stringify(options as any).split('\n');
@@ -215,13 +218,13 @@ export class AIChat implements Task, Disposable {
       { role: 'user', content: prompt },
     ];
 
-    const requestData: IAPIOptions = {
-      model: this.engine.config.model,
-      messages: titleMessages,
-      max_tokens: 50,
-      temperature: 0.7,
-      stream: false,
-    };
+    const requestData: IAPIOptions = buildAPIOptions(
+      this.engine.config,
+      titleMessages,
+      false,
+    );
+    requestData.max_tokens = 50;
+    requestData.temperature = 0.7;
 
     try {
       let title = await this.engine.execute(this.engine.config, requestData);
@@ -298,18 +301,15 @@ export class AIChat implements Task, Disposable {
     }
     if (prompt) await this.appendBlock(prompt);
 
-    let mergedConfig: IEngineConfig;
-    if (chatOptions) mergedConfig = this.engine.mergeOptions(chatOptions);
-    mergedConfig = this.engine.mergeOptions(options); // in case no options offerd
+    let mergedOptions: IOptions = chatOptions ?? {};
+    const roleOptions = options ?? {};
+    if (Object.keys(roleOptions).length) {
+      mergedOptions = mergeDefault(mergedOptions, roleOptions);
+    }
+    const mergedConfig = this.engine.mergeOptions(mergedOptions);
 
     messages.unshift({ role: 'system', content: mergedConfig.initialPrompt });
-    const data: IAPIOptions = {
-      model: mergedConfig.model,
-      messages: messages,
-      max_tokens: mergedConfig.maxTokens,
-      temperature: mergedConfig.temperature,
-      stream: true,
-    };
+    const data: IAPIOptions = buildAPIOptions(mergedConfig, messages, true);
 
     let resp = this.engine.generate(mergedConfig, data);
     await this.appendBlock('<<< assistant');
@@ -457,17 +457,31 @@ export class AIChat implements Task, Disposable {
         continue;
       }
       if (!messages.length) continue;
-      if (line.trim() === REASON_START) isReasoning = true;
+      if (line.trim() === REASON_START) {
+        isReasoning = true;
+        const message = messages[messages.length - 1];
+        if (message.role === 'assistant') message.reasoning_content = '';
+        continue;
+      }
       if (line.trim() === REASON_FINISH) {
         isReasoning = false;
         continue;
       }
-      if (isReasoning) continue;
+      if (isReasoning) {
+        const message = messages[messages.length - 1];
+        if (message.role === 'assistant') {
+          message.reasoning_content += '\n' + line;
+        }
+        continue;
+      }
       messages[messages.length - 1].content += '\n' + line;
     }
 
     for (const message of messages) {
       message.content = message.content.trim();
+      if (message.reasoning_content !== undefined) {
+        message.reasoning_content = message.reasoning_content.trim();
+      }
       if (message.role === 'include') resolveIncludeMessage(message);
     }
     return messages;

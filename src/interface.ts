@@ -10,6 +10,7 @@ export interface IRoleConfig {
 export interface IMessage {
   role: 'system' | 'user' | 'assistant' | 'include';
   content: string;
+  reasoning_content?: string;
 }
 
 export interface IToken {
@@ -23,6 +24,18 @@ export interface IAPIOptions {
   max_tokens?: number;
   temperature?: number;
   stream?: boolean;
+  thinking?: IThinkingOptions;
+  reasoning_effort?: APIReasoningEffort;
+}
+
+export type ThinkingType = 'enabled' | 'disabled';
+
+export type ReasoningEffort = 'low' | 'medium' | 'high' | 'xhigh' | 'max';
+
+export type APIReasoningEffort = 'high' | 'max';
+
+export interface IThinkingOptions {
+  type: ThinkingType;
 }
 
 export interface IEngineConfig {
@@ -32,6 +45,8 @@ export interface IEngineConfig {
   maxTokens: number;
   temperature: number;
   requestTimeout: number;
+  thinking?: IThinkingOptions;
+  reasoningEffort?: ReasoningEffort;
   requiresAuth: boolean;
   initialPrompt: string;
   tokenPath: string;
@@ -60,6 +75,8 @@ export interface IOptions {
   proxy?: string;
   maxTokens?: number;
   temperature?: number;
+  thinking?: IThinkingOptions;
+  reasoningEffort?: ReasoningEffort;
   initialPrompt?: string;
 }
 

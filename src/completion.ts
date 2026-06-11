@@ -11,7 +11,7 @@ import {
   workspace,
   TextEdit,
 } from 'coc.nvim';
-import { Engine } from './engine';
+import { buildAPIOptions, Engine } from './engine';
 import { IAPIOptions, IMessage } from './interface';
 
 interface ICachedCompletion {
@@ -170,13 +170,11 @@ ${snippet}
       { role: 'user', content: promptContent },
     ];
 
-    const requestData: IAPIOptions = {
-      model: this.engine.config.model,
-      messages: messages,
-      max_tokens: this.engine.config.maxTokens,
-      temperature: this.engine.config.temperature,
-      stream: false,
-    };
+    const requestData: IAPIOptions = buildAPIOptions(
+      this.engine.config,
+      messages,
+      false,
+    );
 
     let completionText = '';
     try {

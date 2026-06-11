@@ -1,7 +1,7 @@
 import { workspace, Disposable, Range, TextEdit, Position } from 'coc.nvim';
 
 import { IAPIOptions, IEngineConfig, IEditRange, IMessage } from './interface';
-import { Engine } from './engine';
+import { buildAPIOptions, Engine } from './engine';
 import { Task } from './task';
 import { parseTaskRole } from './roles';
 import {
@@ -64,13 +64,7 @@ export class AIEdit implements Task, Disposable {
       { role: 'system', content: mergedConfig.initialPrompt },
     ];
     if (prompt) messages.push({ role: 'user', content: prompt });
-    const data: IAPIOptions = {
-      model: mergedConfig.model,
-      messages: messages,
-      max_tokens: mergedConfig.maxTokens,
-      temperature: mergedConfig.temperature,
-      stream: true,
-    };
+    const data: IAPIOptions = buildAPIOptions(mergedConfig, messages, true);
 
     if (this.task === 'edit') {
       await this.setupDiffView(selection);

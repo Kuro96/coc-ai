@@ -10,13 +10,50 @@ import {
   IAPIOptions,
   IChunk,
   IEngineConfig,
+  IMessage,
   IOptions,
+  ReasoningEffort,
   IToken,
 } from './interface';
 import { AbortController, mergeDefault } from './utils';
 
 const config = workspace.getConfiguration('coc-ai');
 export const defaultEngineConfig = config.get<IEngineConfig>('global')!;
+
+function normalizeReasoningEffort(effort: ReasoningEffort) {
+  if (effort === 'xhigh' || effort === 'max') return 'max';
+  return 'high';
+}
+
+function supportsReasoningContent(config: IEngineConfig) {
+  return (
+    config.model.startsWith('deepseek-') ||
+    config.endpointUrl.includes('api.deepseek.com')
+  );
+}
+
+function normalizeMessages(config: IEngineConfig, messages: IMessage[]) {
+  if (supportsReasoningContent(config)) return messages;
+  return messages.map(({ reasoning_content, ...message }) => message);
+}
+
+export function buildAPIOptions(
+  config: IEngineConfig,
+  messages: IAPIOptions['messages'],
+  stream: boolean,
+): IAPIOptions {
+  return {
+    model: config.model,
+    messages: normalizeMessages(config, messages),
+    max_tokens: config.maxTokens,
+    temperature: config.temperature,
+    stream,
+    ...(config.thinking?.type && { thinking: config.thinking }),
+    ...(config.reasoningEffort && {
+      reasoning_effort: normalizeReasoningEffort(config.reasoningEffort),
+    }),
+  };
+}
 
 export class Engine {
   config: IEngineConfig;
@@ -124,15 +161,17 @@ export class Engine {
   #parseLine(line: string) {
     const parsed = JSON.parse(line);
     let chunk: IChunk;
-    if (typeof parsed.choices?.[0]?.delta?.reasoning_content === 'string') {
+    const delta = parsed.choices?.[0]?.delta;
+    if (!delta) return { type: 'content', content: '' };
+    if (typeof delta.reasoning_content === 'string') {
       chunk = {
         type: 'reasoning_content',
-        content: parsed.choices[0].delta.reasoning_content,
+        content: delta.reasoning_content,
       };
-    } else if (typeof parsed.choices[0].delta.content === 'string') {
+    } else if (typeof delta.content === 'string') {
       chunk = {
         type: 'content',
-        content: parsed.choices[0].delta.content,
+        content: delta.content,
       };
     } else {
       chunk = { type: 'content', content: '' };
