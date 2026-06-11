@@ -41,7 +41,7 @@ proxy = "<protocol>://<ip>:<port>"
 maxTokens = 4096  # <max token num>
 temperature = 0.6  # <temperature>
 thinking = { type = "enabled" } # OpenAI-compatible thinking switch: "enabled" or "disabled"
-reasoningEffort = "high" # sent as reasoning_effort; DeepSeek supports "high" or "max"
+reasoningEffort = "high" # sent as reasoning_effort; native values are preserved unless a provider needs compatibility mapping
 initialPrompt = "<overrides `initialPrompt` in coc-settings>"
 
 [<your role name>.options-chat]
@@ -68,8 +68,9 @@ of `coc.nvim` for more info. You can edit it by command `:CocConfig`.
 
 - `coc-ai.tab.enabled`: boolean (default: `true`). Enable/disable AI tab completion.
 - `coc-ai.chat.autoTitle`: boolean (default: `false`). Automatically title the chat buffer after the first exchange.
-- `coc-ai.*.thinking`: object (example: `{ "type": "enabled" }`). OpenAI-compatible thinking mode switch.
-- `coc-ai.*.reasoningEffort`: string (example: `"high"` or `"max"`). Sent as OpenAI-compatible `reasoning_effort`; DeepSeek also maps `"low"`/`"medium"` to `"high"` and `"xhigh"` to `"max"`.
+- `coc-ai.*.thinking`: object (example: `{ "type": "enabled" }`). OpenAI-compatible thinking mode switch for providers that support it; omitted for OpenAI GPT requests.
+- `coc-ai.*.reasoningEffort`: string (example: `"minimal"`, `"low"`, `"high"`, or `"xhigh"`). Sent as OpenAI-compatible `reasoning_effort`; provider compatibility maps unsupported aliases when needed.
+  See `roles-example.toml` for GPT 5.5 / 5.4 mini presets that also demonstrate `proxy`.
 
 Also you can refer to my example below:
 
@@ -117,7 +118,8 @@ NOTE:
 ```viml
 :AIC hello world
 :AIC /v4pro who are you?
-:%AIC /gpt-4o-mini /explain 用中文回答
+:%AIC /gpt55 /explain 用中文回答
+:%AIC /gpt54mini /explain 用中文回答
 ```
 
 ## TODOs

@@ -59,7 +59,8 @@ The following examples are commonly used and included in `roles-example.toml`:
 
 ### Model/Backend Presets
 - **`/v4pro`**: Switches to `deepseek-v4-pro` with thinking mode options.
-- **`/4om`**: Switches to `gpt-4o-mini` using a local proxy.
+- **`/gpt55`**: Switches to `gpt-5.5` with OpenAI reasoning effort options and proxy example settings.
+- **`/gpt54mini`**: Switches to `gpt-5.4-mini` with lower OpenAI reasoning effort and proxy example settings.
 
 ## Creating Your Own Agent
 
