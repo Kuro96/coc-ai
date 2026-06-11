@@ -18,6 +18,48 @@ export interface IToken {
   orgId: string | null;
 }
 
+export interface IOAuthToken {
+  type: 'oauth';
+  access: string;
+  refresh: string;
+  expires: number;
+}
+
+export interface IOpenAICodexToken {
+  access: string;
+  refresh: string;
+  expires?: number;
+  accountId?: string;
+  path: string;
+  authFile?: ICodexAuthFile;
+  openCodeAuthFile?: IOpenCodeAuthFile;
+}
+
+export interface ICodexTokenData {
+  id_token?: string | { chatgpt_account_id?: string; raw_jwt?: string };
+  access_token: string;
+  refresh_token: string;
+  account_id?: string;
+}
+
+export interface ICodexAuthFile {
+  auth_mode?: string;
+  tokens?: ICodexTokenData;
+  last_refresh?: string;
+}
+
+export interface IOpenCodeOAuthToken {
+  type: 'oauth';
+  access: string;
+  refresh: string;
+  expires?: number;
+  accountId?: string;
+}
+
+export interface IOpenCodeAuthFile {
+  openai?: IOpenCodeOAuthToken;
+}
+
 export interface IAPIOptions {
   model: string;
   messages: IMessage[];
@@ -41,6 +83,8 @@ export type ReasoningEffort =
 
 export type APIReasoningEffort = ReasoningEffort;
 
+export type AuthProvider = 'api-key' | 'openai-codex';
+
 export interface IThinkingOptions {
   type: ThinkingType;
 }
@@ -52,11 +96,13 @@ export interface IEngineConfig {
   maxTokens: number;
   temperature: number;
   requestTimeout: number;
+  authProvider?: AuthProvider;
   thinking?: IThinkingOptions;
   reasoningEffort?: ReasoningEffort;
   requiresAuth: boolean;
   initialPrompt: string;
   tokenPath: string;
+  oauthTokenPath?: string;
   rolesConfigPath: string;
 
   // chat
@@ -78,7 +124,9 @@ export interface IOptions {
   model?: string;
   endpointUrl?: string;
   requiresAuth?: boolean;
+  authProvider?: AuthProvider;
   tokenPath?: string;
+  oauthTokenPath?: string;
   proxy?: string;
   maxTokens?: number;
   temperature?: number;
