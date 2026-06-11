@@ -30,9 +30,16 @@ export interface IAPIOptions {
 
 export type ThinkingType = 'enabled' | 'disabled';
 
-export type ReasoningEffort = 'low' | 'medium' | 'high' | 'xhigh' | 'max';
+export type ReasoningEffort =
+  | 'none'
+  | 'minimal'
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'xhigh'
+  | 'max';
 
-export type APIReasoningEffort = 'high' | 'max';
+export type APIReasoningEffort = ReasoningEffort;
 
 export interface IThinkingOptions {
   type: ThinkingType;

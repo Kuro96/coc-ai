@@ -2,7 +2,7 @@ import { workspace, window } from 'coc.nvim';
 import * as os from 'os';
 import * as fs from 'fs';
 import { TextDecoder } from 'util';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 
@@ -20,16 +20,30 @@ import { AbortController, mergeDefault } from './utils';
 const config = workspace.getConfiguration('coc-ai');
 export const defaultEngineConfig = config.get<IEngineConfig>('global')!;
 
-function normalizeReasoningEffort(effort: ReasoningEffort) {
+function needsDeepSeekReasoningEffortMapping(config: IEngineConfig) {
+  return (
+    config.model.startsWith('deepseek-') ||
+    config.endpointUrl.includes('api.deepseek.com')
+  );
+}
+
+function supportsThinkingMode(config: IEngineConfig) {
+  return needsDeepSeekReasoningEffortMapping(config);
+}
+
+function normalizeReasoningEffort(
+  config: IEngineConfig,
+  effort: ReasoningEffort,
+) {
+  if (!needsDeepSeekReasoningEffortMapping(config)) {
+    return effort === 'max' ? 'xhigh' : effort;
+  }
   if (effort === 'xhigh' || effort === 'max') return 'max';
   return 'high';
 }
 
 function supportsReasoningContent(config: IEngineConfig) {
-  return (
-    config.model.startsWith('deepseek-') ||
-    config.endpointUrl.includes('api.deepseek.com')
-  );
+  return supportsThinkingMode(config);
 }
 
 function normalizeMessages(config: IEngineConfig, messages: IMessage[]) {
@@ -48,9 +62,13 @@ export function buildAPIOptions(
     max_tokens: config.maxTokens,
     temperature: config.temperature,
     stream,
-    ...(config.thinking?.type && { thinking: config.thinking }),
+    ...(supportsThinkingMode(config) &&
+      config.thinking?.type && { thinking: config.thinking }),
     ...(config.reasoningEffort && {
-      reasoning_effort: normalizeReasoningEffort(config.reasoningEffort),
+      reasoning_effort: normalizeReasoningEffort(
+        config,
+        config.reasoningEffort,
+      ),
     }),
   };
 }
@@ -123,7 +141,7 @@ export class Engine {
       this.controller.abort();
     }, this.config.requestTimeout * 1000);
 
-    let resp;
+    let resp: AxiosResponse;
     try {
       resp = await axios({
         method: 'post',
