@@ -5,6 +5,7 @@ import { AIChats, hideChat } from './aichat';
 import { AIEdit } from './aiedit';
 import { getRoles } from './roles';
 import { AICompletionProvider } from './completion';
+import { configure } from './configure';
 
 const config = workspace.getConfiguration('coc-ai');
 const { nvim } = workspace;
@@ -94,6 +95,9 @@ export async function activate(context: ExtensionContext) {
     }),
     commands.registerCommand('coc-ai.roleComplete', () => {
       return Object.keys(getRoles() ?? {});
+    }),
+    commands.registerCommand('coc-ai.configure', async () => {
+      await configure();
     }),
     workspace.registerAutocmd({
       event: 'BufWinLeave',

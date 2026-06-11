@@ -13,3 +13,4 @@ endfunction
 
 command! AIStop call CocActionAsync('runCommand', 'coc-ai.stop')
 command! AIBack call CocActionAsync('runCommand', 'coc-ai.show')
+command! AIConfig call CocActionAsync('runCommand', 'coc-ai.configure')
