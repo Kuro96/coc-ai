@@ -61,6 +61,7 @@ The following examples are commonly used and included in `roles-example.toml`:
 - **`/v4pro`**: Switches to `deepseek-v4-pro` with thinking mode options.
 - **`/gpt55`**: Switches to `gpt-5.5` with OpenAI reasoning effort options and proxy example settings.
 - **`/gpt54mini`**: Switches to `gpt-5.4-mini` with lower OpenAI reasoning effort and proxy example settings.
+- **`/chatgpt-plan`**: Uses OpenAI Codex OAuth tokens from OpenCode/Codex login for ChatGPT Plus/Pro subscription access. It is an auth/backend mixin for ChatGPT subscription plans and does not choose a model; use `:AIConfig`, `coc-ai.*.model`, or another role to select the concrete model.
 
 ## Creating Your Own Agent
 

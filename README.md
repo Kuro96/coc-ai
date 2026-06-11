@@ -36,7 +36,9 @@ prompt = "<extra prompt which will be add to user prompt>"
 model = "<model name>"
 endpointUrl = "<protocol>://<hostname>/v1/chat/completions"
 requiresAuth = true # <true/false>
+authProvider = "api-key" # "api-key" or "openai-codex"
 tokenPath = "<path to your token file>"
+oauthTokenPath = "~/.opencode/auth/openai.json" # for authProvider = "openai-codex"; falls back to ~/.local/share/opencode/auth.json, then ~/.codex/auth.json when unset/default path is missing
 proxy = "<protocol>://<ip>:<port>"
 maxTokens = 4096  # <max token num>
 temperature = 0.6  # <temperature>
@@ -70,7 +72,13 @@ of `coc.nvim` for more info. You can edit it by command `:CocConfig`.
 - `coc-ai.chat.autoTitle`: boolean (default: `false`). Automatically title the chat buffer after the first exchange.
 - `coc-ai.*.thinking`: object (example: `{ "type": "enabled" }`). OpenAI-compatible thinking mode switch for providers that support it; omitted for OpenAI GPT requests.
 - `coc-ai.*.reasoningEffort`: string (example: `"minimal"`, `"low"`, `"high"`, or `"xhigh"`). Sent as OpenAI-compatible `reasoning_effort`; provider compatibility maps unsupported aliases when needed.
+- `coc-ai.*.authProvider`: string (`"api-key"` or `"openai-codex"`). `"openai-codex"` reuses an OpenCode/Codex OAuth token to access ChatGPT Plus/Pro subscription models through the Codex backend.
+- `coc-ai.*.oauthTokenPath`: string (default: `"~/.opencode/auth/openai.json"`). Token file created by OpenCode Codex auth plugins; when the default path is missing, coc-ai falls back to modern OpenCode auth at `"~/.local/share/opencode/auth.json"`, then the official Codex CLI cache at `"~/.codex/auth.json"`.
   See `roles-example.toml` for GPT 5.5 / 5.4 mini presets that also demonstrate `proxy`.
+
+For ChatGPT Plus/Pro subscription access, sign in once with OpenCode/Codex first so an OAuth cache exists, then run `:AIConfig` and choose **ChatGPT Plus/Pro (Codex OAuth)** to select the concrete model for `global`, `chat`, `edit`, `complete`, or `tab`. Supported file caches are OpenCode plugin auth at `~/.opencode/auth/openai.json`, modern OpenCode auth at `~/.local/share/opencode/auth.json`, and official Codex CLI auth at `~/.codex/auth.json`.
+
+The `/chatgpt-plan` role is intentionally only an auth/backend mixin for ChatGPT subscription plans. It does not pick a model by itself; configure `coc-ai.*.model` with `:AIConfig`, `:CocConfig`, or another role, then use `/chatgpt-plan` when you want that request to go through the Codex OAuth backend.
 
 Also you can refer to my example below:
 
@@ -104,6 +112,7 @@ role options > chat options > Coc options
 3. AIComplete: `:[%]['<,'>]AI [/<role>] [<prompt>]`
 4. AIStop: `:AIS[top]`
 5. AIBack(resume hidden chat window if `scratchBufferKeepOpen` set to `true`): `:AIB[ack]`
+6. AIConfig: `:AIConfig` interactively updates provider/model/auth settings in `coc-settings.json`.
 
 NOTE:
 
@@ -120,6 +129,8 @@ NOTE:
 :AIC /v4pro who are you?
 :%AIC /gpt55 /explain 用中文回答
 :%AIC /gpt54mini /explain 用中文回答
+:AIConfig
+:AIC /chatgpt-plan implement this with my configured ChatGPT subscription model
 ```
 
 ## TODOs

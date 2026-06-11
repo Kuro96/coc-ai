@@ -67,3 +67,11 @@ tokenPath = "~/.vim/token.oa"
 proxy = "http://127.0.0.1:1081"
 maxTokens = 4096
 reasoningEffort = "low"
+
+[chatgpt-plan]
+[chatgpt-plan.options]
+authProvider = "openai-codex"
+requiresAuth = true
+oauthTokenPath = "~/.opencode/auth/openai.json"
+maxTokens = 4096
+reasoningEffort = "high"
