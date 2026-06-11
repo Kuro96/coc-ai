@@ -65,11 +65,11 @@
               "enum": ["enabled", "disabled"]
             }
           },
-          "description": "OpenAI-compatible thinking mode switch, for example {\"type\": \"enabled\"}"
+          "description": "OpenAI-compatible thinking mode switch for providers that support it, for example {\"type\": \"enabled\"}"
         },
         "coc-ai.global.reasoningEffort": {
           "type": "string",
-          "enum": ["low", "medium", "high", "xhigh", "max"],
+          "enum": ["none", "minimal", "low", "medium", "high", "xhigh", "max"],
           "default": null,
           "description": "OpenAI-compatible reasoning_effort value for thinking models"
         },
@@ -129,11 +129,11 @@
               "enum": ["enabled", "disabled"]
             }
           },
-          "description": "OpenAI-compatible thinking mode switch for AI chat"
+          "description": "OpenAI-compatible thinking mode switch for AI chat providers that support it"
         },
         "coc-ai.chat.reasoningEffort": {
           "type": "string",
-          "enum": ["low", "medium", "high", "xhigh", "max"],
+          "enum": ["none", "minimal", "low", "medium", "high", "xhigh", "max"],
           "default": null,
           "description": "OpenAI-compatible reasoning_effort value for AI chat"
         },
@@ -219,11 +219,11 @@
               "enum": ["enabled", "disabled"]
             }
           },
-          "description": "OpenAI-compatible thinking mode switch for AI edit"
+          "description": "OpenAI-compatible thinking mode switch for AI edit providers that support it"
         },
         "coc-ai.edit.reasoningEffort": {
           "type": "string",
-          "enum": ["low", "medium", "high", "xhigh", "max"],
+          "enum": ["none", "minimal", "low", "medium", "high", "xhigh", "max"],
           "default": null,
           "description": "OpenAI-compatible reasoning_effort value for AI edit"
         },
@@ -274,11 +274,11 @@
               "enum": ["enabled", "disabled"]
             }
           },
-          "description": "OpenAI-compatible thinking mode switch for AI complete"
+          "description": "OpenAI-compatible thinking mode switch for AI complete providers that support it"
         },
         "coc-ai.complete.reasoningEffort": {
           "type": "string",
-          "enum": ["low", "medium", "high", "xhigh", "max"],
+          "enum": ["none", "minimal", "low", "medium", "high", "xhigh", "max"],
           "default": null,
           "description": "OpenAI-compatible reasoning_effort value for AI complete"
         },
@@ -344,11 +344,11 @@
               "enum": ["enabled", "disabled"]
             }
           },
-          "description": "OpenAI-compatible thinking mode switch for AI tab completion"
+          "description": "OpenAI-compatible thinking mode switch for AI tab completion providers that support it"
         },
         "coc-ai.tab.reasoningEffort": {
           "type": "string",
-          "enum": ["low", "medium", "high", "xhigh", "max"],
+          "enum": ["none", "minimal", "low", "medium", "high", "xhigh", "max"],
           "default": null,
           "description": "OpenAI-compatible reasoning_effort value for AI tab completion"
         },

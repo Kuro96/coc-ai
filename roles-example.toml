@@ -48,11 +48,22 @@ thinking = { type = "enabled" }
 reasoningEffort = "high"
 initialPrompt = ""
 
-# example for proxy
-[4om]
-[4om.options]
-model = "gpt-4o-mini"
+[gpt55]
+[gpt55.options]
+model = "gpt-5.5"
 endpointUrl = "https://api.openai.com/v1/chat/completions"
 requiresAuth = true
 tokenPath = "~/.vim/token.oa"
 proxy = "http://127.0.0.1:1081"
+maxTokens = 4096
+reasoningEffort = "high"
+
+[gpt54mini]
+[gpt54mini.options]
+model = "gpt-5.4-mini"
+endpointUrl = "https://api.openai.com/v1/chat/completions"
+requiresAuth = true
+tokenPath = "~/.vim/token.oa"
+proxy = "http://127.0.0.1:1081"
+maxTokens = 4096
+reasoningEffort = "low"
