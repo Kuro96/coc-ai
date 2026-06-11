@@ -83,6 +83,12 @@
           "default": true,
           "description": "Whether requires authentitation for coc-ai global default"
         },
+        "coc-ai.global.authProvider": {
+          "type": "string",
+          "enum": ["api-key", "openai-codex"],
+          "default": "api-key",
+          "description": "Authentication provider: api-key for OpenAI-compatible API keys, openai-codex for ChatGPT Plus/Pro OAuth tokens"
+        },
         "coc-ai.global.initialPrompt": {
           "type": "string",
           "description": "Placeholder, do NOT change! Use engine-specific option."
@@ -91,6 +97,11 @@
           "type": "string",
           "default": "~/.vim/vimrc.d/coc-ai-token.toml",
           "description": "Path to your coc-ai api token file"
+        },
+        "coc-ai.global.oauthTokenPath": {
+          "type": "string",
+          "default": "~/.opencode/auth/openai.json",
+          "description": "Path to OpenAI Codex OAuth token file, compatible with OpenCode auth login"
         },
         "coc-ai.global.rolesConfigPath": {
           "type": "string",
@@ -146,6 +157,15 @@
           "type": "boolean",
           "default": true,
           "description": "Whether requires authentitation for AI chat"
+        },
+        "coc-ai.chat.authProvider": {
+          "type": "string",
+          "enum": ["api-key", "openai-codex"],
+          "description": "Authentication provider for AI chat"
+        },
+        "coc-ai.chat.oauthTokenPath": {
+          "type": "string",
+          "description": "Path to OpenAI Codex OAuth token file for AI chat"
         },
         "coc-ai.chat.initialPrompt": {
           "type": "string",
@@ -237,6 +257,15 @@
           "default": true,
           "description": "Whether requires authentitation for AI edit"
         },
+        "coc-ai.edit.authProvider": {
+          "type": "string",
+          "enum": ["api-key", "openai-codex"],
+          "description": "Authentication provider for AI edit"
+        },
+        "coc-ai.edit.oauthTokenPath": {
+          "type": "string",
+          "description": "Path to OpenAI Codex OAuth token file for AI edit"
+        },
         "coc-ai.edit.initialPrompt": {
           "type": "string",
           "default": "You will act as a code generator.\nDo not write any introduction, conclusion, or explanation.\nDo not use fenced code blocks.",
@@ -291,6 +320,15 @@
           "type": "boolean",
           "default": true,
           "description": "Whether requires authentitation for AI complete"
+        },
+        "coc-ai.complete.authProvider": {
+          "type": "string",
+          "enum": ["api-key", "openai-codex"],
+          "description": "Authentication provider for AI complete"
+        },
+        "coc-ai.complete.oauthTokenPath": {
+          "type": "string",
+          "description": "Path to OpenAI Codex OAuth token file for AI complete"
         },
         "coc-ai.complete.initialPrompt": {
           "type": "string",
@@ -362,6 +400,15 @@
           "default": true,
           "description": "Whether requires authentitation for AI tab completion"
         },
+        "coc-ai.tab.authProvider": {
+          "type": "string",
+          "enum": ["api-key", "openai-codex"],
+          "description": "Authentication provider for AI tab completion"
+        },
+        "coc-ai.tab.oauthTokenPath": {
+          "type": "string",
+          "description": "Path to OpenAI Codex OAuth token file for AI tab completion"
+        },
         "coc-ai.tab.initialPrompt": {
           "type": "string",
           "default": "You are a code completion engine. \nComplete the following code context. \nDo not provide any explanation. \nDo not use fenced code blocks. \nOnly return the completion part.",
@@ -371,8 +418,8 @@
     },
     "commands": [
       {
-        "command": "coc-ai.Command",
-        "title": "coc-ai command title"
+        "command": "coc-ai.configure",
+        "title": "coc-ai: Configure provider and model"
       }
     ]
   },
