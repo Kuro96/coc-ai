@@ -40,6 +40,8 @@ tokenPath = "<path to your token file>"
 proxy = "<protocol>://<ip>:<port>"
 maxTokens = 4096  # <max token num>
 temperature = 0.6  # <temperature>
+thinking = { type = "enabled" } # OpenAI-compatible thinking switch: "enabled" or "disabled"
+reasoningEffort = "high" # sent as reasoning_effort; DeepSeek supports "high" or "max"
 initialPrompt = "<overrides `initialPrompt` in coc-settings>"
 
 [<your role name>.options-chat]
@@ -66,13 +68,17 @@ of `coc.nvim` for more info. You can edit it by command `:CocConfig`.
 
 - `coc-ai.tab.enabled`: boolean (default: `true`). Enable/disable AI tab completion.
 - `coc-ai.chat.autoTitle`: boolean (default: `false`). Automatically title the chat buffer after the first exchange.
+- `coc-ai.*.thinking`: object (example: `{ "type": "enabled" }`). OpenAI-compatible thinking mode switch.
+- `coc-ai.*.reasoningEffort`: string (example: `"high"` or `"max"`). Sent as OpenAI-compatible `reasoning_effort`; DeepSeek also maps `"low"`/`"medium"` to `"high"` and `"xhigh"` to `"max"`.
 
 Also you can refer to my example below:
 
 ```json
 {
-  "coc-ai.global.model": "deepseek-chat",
+  "coc-ai.global.model": "deepseek-v4-pro",
   "coc-ai.global.endpointUrl": "https://api.deepseek.com/v1/chat/completions",
+  "coc-ai.global.thinking": { "type": "enabled" },
+  "coc-ai.global.reasoningEffort": "high",
   "coc-ai.global.requiresAuth": true,
   "coc-ai.global.tokenPath": "~/.vim/token",
   "coc-ai.global.rolesConfigPath": "~/.vim/vimrc.d/coc-ai-roles.toml",
@@ -110,7 +116,7 @@ NOTE:
 
 ```viml
 :AIC hello world
-:AIC /r1 who are you?
+:AIC /v4pro who are you?
 :%AIC /gpt-4o-mini /explain 用中文回答
 ```
 

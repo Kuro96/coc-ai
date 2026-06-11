@@ -32,19 +32,20 @@ temperature = 0.4
 
 # engine specific options:
 [refactor.options-chat]
-model = "deepseek-chat"
+model = "deepseek-v4-pro"
 
 [refactor.options-complete]
 
-# mixin to use deepseek-reasoner
-[r1]
-[r1.options]
-model = "deepseek-reasoner"
+[v4pro]
+[v4pro.options]
+model = "deepseek-v4-pro"
 endpointUrl = "https://api.deepseek.com/v1/chat/completions"
 requiresAuth = true
 tokenPath = "~/.vim/token.ds"
 maxTokens = 4096
 temperature = 0.6
+thinking = { type = "enabled" }
+reasoningEffort = "high"
 initialPrompt = ""
 
 # example for proxy

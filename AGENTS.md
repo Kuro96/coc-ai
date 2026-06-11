@@ -43,8 +43,8 @@ You can use a role in any AI command (`:AIChat`, `:AIEdit`, `:AI`) by prefixing 
 You can chain multiple roles. Configurations are merged in order, meaning later roles override earlier ones. This is useful for "mixins" that only change the model or a specific setting.
 
 ```vim
-" Use the 'refactor' prompt but switch the model to the one defined in 'r1'
-:AIChat /refactor /r1
+" Use the 'refactor' prompt but switch the model to the one defined in 'v4pro'
+:AIChat /refactor /v4pro
 ```
 
 ## Built-in Examples
@@ -58,7 +58,7 @@ The following examples are commonly used and included in `roles-example.toml`:
 - **`/review`**: Specific code review focusing on security, performance, and best practices.
 
 ### Model/Backend Presets
-- **`/r1`**: Switches to the `deepseek-reasoner` model with specific API endpoints.
+- **`/v4pro`**: Switches to `deepseek-v4-pro` with thinking mode options.
 - **`/4om`**: Switches to `gpt-4o-mini` using a local proxy.
 
 ## Creating Your Own Agent
