@@ -32,8 +32,8 @@
         },
         "coc-ai.global.model": {
           "type": "string",
-          "default": "deepseek-chat",
-          "description": "Model name for coc-ai global default(see https://platform.openai.com/docs/api-reference/completions)"
+          "default": "deepseek-v4-pro",
+          "description": "Model name for coc-ai global default(see https://api-docs.deepseek.com/zh-cn/api/create-chat-completion)"
         },
         "coc-ai.global.endpointUrl": {
           "type": "string",
@@ -54,6 +54,24 @@
           "type": "number",
           "default": 0.3,
           "description": "Model temperature for coc-ai global default"
+        },
+        "coc-ai.global.thinking": {
+          "type": "object",
+          "default": null,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["enabled", "disabled"]
+            }
+          },
+          "description": "OpenAI-compatible thinking mode switch, for example {\"type\": \"enabled\"}"
+        },
+        "coc-ai.global.reasoningEffort": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "xhigh", "max"],
+          "default": null,
+          "description": "OpenAI-compatible reasoning_effort value for thinking models"
         },
         "coc-ai.global.requestTimeout": {
           "type": "number",
@@ -100,6 +118,24 @@
           "type": "number",
           "default": 0.3,
           "description": "Model temperature for AI chat"
+        },
+        "coc-ai.chat.thinking": {
+          "type": "object",
+          "default": null,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["enabled", "disabled"]
+            }
+          },
+          "description": "OpenAI-compatible thinking mode switch for AI chat"
+        },
+        "coc-ai.chat.reasoningEffort": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "xhigh", "max"],
+          "default": null,
+          "description": "OpenAI-compatible reasoning_effort value for AI chat"
         },
         "coc-ai.chat.requestTimeout": {
           "type": "number",
@@ -173,6 +209,24 @@
           "default": 0.1,
           "description": "Model temperature for AI edit"
         },
+        "coc-ai.edit.thinking": {
+          "type": "object",
+          "default": null,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["enabled", "disabled"]
+            }
+          },
+          "description": "OpenAI-compatible thinking mode switch for AI edit"
+        },
+        "coc-ai.edit.reasoningEffort": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "xhigh", "max"],
+          "default": null,
+          "description": "OpenAI-compatible reasoning_effort value for AI edit"
+        },
         "coc-ai.edit.requestTimeout": {
           "type": "number",
           "default": 20,
@@ -209,6 +263,24 @@
           "type": "number",
           "default": 0.1,
           "description": "Model temperature for AI complete"
+        },
+        "coc-ai.complete.thinking": {
+          "type": "object",
+          "default": null,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["enabled", "disabled"]
+            }
+          },
+          "description": "OpenAI-compatible thinking mode switch for AI complete"
+        },
+        "coc-ai.complete.reasoningEffort": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "xhigh", "max"],
+          "default": null,
+          "description": "OpenAI-compatible reasoning_effort value for AI complete"
         },
         "coc-ai.complete.requestTimeout": {
           "type": "number",
@@ -261,6 +333,24 @@
           "type": "number",
           "default": 0.2,
           "description": "Model temperature for AI tab completion"
+        },
+        "coc-ai.tab.thinking": {
+          "type": "object",
+          "default": null,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["enabled", "disabled"]
+            }
+          },
+          "description": "OpenAI-compatible thinking mode switch for AI tab completion"
+        },
+        "coc-ai.tab.reasoningEffort": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "xhigh", "max"],
+          "default": null,
+          "description": "OpenAI-compatible reasoning_effort value for AI tab completion"
         },
         "coc-ai.tab.requestTimeout": {
           "type": "number",
