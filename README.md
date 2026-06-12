@@ -68,15 +68,23 @@ with `coc-ai.chat.populatesOptions` set to `true`.
 `coc-settings.json`, see [docs](https://github.com/neoclide/coc.nvim/wiki/Using-the-configuration-file)
 of `coc.nvim` for more info. You can edit it by command `:CocConfig`.
 
-- `coc-ai.tab.enabled`: boolean (default: `true`). Enable/disable AI tab completion.
-- `coc-ai.chat.autoTitle`: boolean (default: `false`). Automatically title the chat buffer after the first exchange.
+- `coc-ai.tab.enabled`: boolean (default: `false`). Enable/disable AI tab completion.
+- `coc-ai.chat.autoTitle`: boolean (default: `true`). Automatically title the chat buffer after the first exchange.
 - `coc-ai.*.thinking`: object (example: `{ "type": "enabled" }`). OpenAI-compatible thinking mode switch for providers that support it; omitted for OpenAI GPT requests.
 - `coc-ai.*.reasoningEffort`: string (example: `"minimal"`, `"low"`, `"high"`, or `"xhigh"`). Sent as OpenAI-compatible `reasoning_effort`; provider compatibility maps unsupported aliases when needed.
 - `coc-ai.*.authProvider`: string (`"api-key"` or `"openai-codex"`). `"openai-codex"` reuses an OpenCode/Codex OAuth token to access ChatGPT Plus/Pro subscription models through the Codex backend.
 - `coc-ai.*.oauthTokenPath`: string (default: `"~/.opencode/auth/openai.json"`). Token file created by OpenCode Codex auth plugins; when the default path is missing, coc-ai falls back to modern OpenCode auth at `"~/.local/share/opencode/auth.json"`, then the official Codex CLI cache at `"~/.codex/auth.json"`.
   See `roles-example.toml` for GPT 5.5 / 5.4 mini presets that also demonstrate `proxy`.
 
-For ChatGPT Plus/Pro subscription access, sign in once with OpenCode/Codex first so an OAuth cache exists, then run `:AIConfig` and choose **ChatGPT Plus/Pro (Codex OAuth)** to select the concrete model for `global`, `chat`, `edit`, `complete`, or `tab`. Supported file caches are OpenCode plugin auth at `~/.opencode/auth/openai.json`, modern OpenCode auth at `~/.local/share/opencode/auth.json`, and official Codex CLI auth at `~/.codex/auth.json`.
+For ChatGPT Plus/Pro subscription access, sign in once with OpenCode/Codex first so an OAuth cache exists, then run `:AIConfig` and choose **Provider/model wizard** -> **ChatGPT Plus/Pro (Codex OAuth)** to select the concrete model for `global`, `chat`, `edit`, `complete`, or `tab`. Supported file caches are OpenCode plugin auth at `~/.opencode/auth/openai.json`, modern OpenCode auth at `~/.local/share/opencode/auth.json`, and official Codex CLI auth at `~/.codex/auth.json`.
+
+`:AIConfig` is a small configuration center inspired by OpenCode's discoverable config workflow, adapted to coc.nvim's Vim UI constraints. Coc does not provide a full multi-pane settings TUI inside Vim, so coc-ai keeps common changes in menu/input prompts and sends complex edits back to normal files:
+
+- **Provider/model wizard**: configure ChatGPT Plus/Pro OAuth, OpenAI-compatible API keys, or just the model for `global`, `chat`, `edit`, `complete`, or `tab`.
+- **Edit one common setting**: update frequently changed values such as model, endpoint, proxy, token paths, reasoning effort, chat UI behavior, and tab completion without remembering JSON keys.
+- **Set roles config path**: change `coc-ai.global.rolesConfigPath` interactively.
+- **Open roles TOML**: open the roles file in Vim, creating a starter file if it does not exist.
+- **Open coc-settings.json**: jump to `:CocConfig` for advanced or bulk edits.
 
 The `/chatgpt-plan` role is intentionally only an auth/backend mixin for ChatGPT subscription plans. It does not pick a model by itself; configure `coc-ai.*.model` with `:AIConfig`, `:CocConfig`, or another role, then use `/chatgpt-plan` when you want that request to go through the Codex OAuth backend.
 
@@ -112,7 +120,7 @@ role options > chat options > Coc options
 3. AIComplete: `:[%]['<,'>]AI [/<role>] [<prompt>]`
 4. AIStop: `:AIS[top]`
 5. AIBack(resume hidden chat window if `scratchBufferKeepOpen` set to `true`): `:AIB[ack]`
-6. AIConfig: `:AIConfig` interactively updates provider/model/auth settings in `coc-settings.json`.
+6. AIConfig: `:AIConfig` opens the interactive configuration center for provider/model/auth setup, common settings, roles TOML, and `coc-settings.json`.
 
 NOTE:
 

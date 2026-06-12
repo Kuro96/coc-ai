@@ -419,7 +419,7 @@
     "commands": [
       {
         "command": "coc-ai.configure",
-        "title": "coc-ai: Configure provider and model"
+        "title": "coc-ai: Open configuration center"
       }
     ]
   },
